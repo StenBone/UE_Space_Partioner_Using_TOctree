@@ -19,7 +19,6 @@ void ASpacePartioner::Initialize(const FBox& NewBounds, const bool& inDrawDebugI
 {
 	bInitialized = true;
 	bDrawDebugInfo = inDrawDebugInfo;
-	Bounds = NewBounds;
 	OctreeData = new FSimpleOctree(NewBounds.GetCenter(), NewBounds.GetExtent().GetMax()); // const FVector & InOrigin, float InExtent
 }
 
@@ -31,15 +30,8 @@ void ASpacePartioner::Initialize(const float& inExtent, const bool& inDrawDebugI
 	// The Extent is very similar to the radius of a circle
 	FVector min = FVector(-inExtent, -inExtent, -inExtent);
 	FVector max = FVector(inExtent, inExtent, inExtent);
-	Bounds = FBox(min, max);
-	OctreeData = new FSimpleOctree(Bounds.GetCenter(), Bounds.GetExtent().GetMax()); // const FVector & InOrigin, float InExtent
-
-	if (Bounds.GetExtent().Equals(OctreeData->GetRootBounds().Extent))
-	{
-		UE_LOG(LogTemp, Log, TEXT("Use Get Root Bounds"));
-	}
-	UE_LOG(LogTemp, Log, TEXT("Bounds %s"), *Bounds.GetExtent().ToString());
-	UE_LOG(LogTemp, Log, TEXT("GetRootBounds %s"), *OctreeData->GetRootBounds().Extent.ToString());
+	FBox NewBounds = FBox(min, max);
+	OctreeData = new FSimpleOctree(NewBounds.GetCenter(), NewBounds.GetExtent().GetMax()); // const FVector & InOrigin, float InExtent
 }
 
 // Called when the game starts or when spawned
@@ -98,18 +90,15 @@ void ASpacePartioner::AddOctreeElement(const FOctreeElement& NewOctreeElement)
 	UE_LOG(LogTemp, Log, TEXT("Added element to Octree."));
 }
 
-void ASpacePartioner::ApplyWorldOffset(const FVector& InOffset)
-{
-	Bounds.Min += InOffset;
-	Bounds.Max += InOffset;
-	OctreeData->ApplyOffset(InOffset);
-}
-
 void ASpacePartioner::DrawOctreeBounds()
 {
-	float max = this->Bounds.GetExtent().GetMax();
-	FVector extent = FVector(max, max, max);
-	DrawDebugBox(GetWorld(), this->Bounds.GetCenter(), extent, FColor().Blue, false, 0.0f);
-	DrawDebugSphere(GetWorld(), this->Bounds.GetCenter() + extent, 4.0f, 12, FColor().White, false, 0.0f);
-	DrawDebugSphere(GetWorld(), this->Bounds.GetCenter() - extent, 4.0f, 12, FColor().White, false, 0.0f);
+	FVector extent = this->OctreeData->GetRootBounds().Extent;
+	
+	float max = extent.GetMax();
+	FVector maxExtent = FVector(max, max, max);
+	FVector center = this->OctreeData->GetRootBounds().Center;
+
+	DrawDebugBox(GetWorld(), center, maxExtent, FColor().Blue, false, 0.0f);
+	DrawDebugSphere(GetWorld(), center + maxExtent, 4.0f, 12, FColor().White, false, 0.0f);
+	DrawDebugSphere(GetWorld(), center - maxExtent, 4.0f, 12, FColor().White, false, 0.0f);
 }

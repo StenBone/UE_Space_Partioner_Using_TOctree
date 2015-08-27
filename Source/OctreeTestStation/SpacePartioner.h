@@ -97,8 +97,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Octree)
 	void AddOctreeElement(const FOctreeElement& NewOctreeElement);
 
-	void ApplyWorldOffset(const FVector& InOffset);
-
 	/** Draws Debug information at runtime */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
 	bool bDrawDebugInfo = false;
@@ -110,7 +108,6 @@ private:
 
 	FSimpleOctree* OctreeData;
 	bool bInitialized;
-	FBox Bounds;
 	
 };
 
