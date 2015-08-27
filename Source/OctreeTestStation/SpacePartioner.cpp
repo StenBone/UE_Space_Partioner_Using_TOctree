@@ -15,12 +15,24 @@ ASpacePartioner::ASpacePartioner(const FObjectInitializer& ObjectInitializer)
 	OctreeData = new FSimpleOctree(FVector(0.0f, 0.0f, 0.0f), 100.0f); // const FVector & InOrigin, float InExtent
 }
 
-void ASpacePartioner::Initialize(const FBox& NewBounds, bool drawDebugInfo)
+void ASpacePartioner::Initialize(const FBox& NewBounds, const bool& inDrawDebugInfo)
 {
 	bInitialized = true;
-	bDrawDebugInfo = drawDebugInfo;
+	bDrawDebugInfo = inDrawDebugInfo;
 	Bounds = NewBounds;
 	OctreeData = new FSimpleOctree(NewBounds.GetCenter(), NewBounds.GetExtent().GetMax()); // const FVector & InOrigin, float InExtent
+}
+
+void ASpacePartioner::Initialize(const float& inExtent, const bool& inDrawDebugInfo)
+{
+	bInitialized = true;
+	bDrawDebugInfo = inDrawDebugInfo;
+
+	// The Extent is very similar to the radius of a circle
+	FVector min = FVector(-inExtent, -inExtent, -inExtent);
+	FVector max = FVector(inExtent, inExtent, inExtent);
+	Bounds = FBox(min, max);
+	OctreeData = new FSimpleOctree(Bounds.GetCenter(), Bounds.GetExtent().GetMax()); // const FVector & InOrigin, float InExtent
 }
 
 // Called when the game starts or when spawned
