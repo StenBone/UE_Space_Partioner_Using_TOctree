@@ -15,9 +15,10 @@ ASpacePartioner::ASpacePartioner(const FObjectInitializer& ObjectInitializer)
 	OctreeData = new FSimpleOctree(FVector(0.0f, 0.0f, 0.0f), 100.0f); // const FVector & InOrigin, float InExtent
 }
 
-void ASpacePartioner::Initialize(const FBox& NewBounds)
+void ASpacePartioner::Initialize(const FBox& NewBounds, bool drawDebugInfo)
 {
 	bInitialized = true;
+	bDrawDebugInfo = drawDebugInfo;
 	Bounds = NewBounds;
 	OctreeData = new FSimpleOctree(NewBounds.GetCenter(), NewBounds.GetExtent().GetMax()); // const FVector & InOrigin, float InExtent
 }

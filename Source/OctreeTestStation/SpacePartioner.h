@@ -80,7 +80,7 @@ public:
 	* @param NewBounds	Intial size of the Octree
 	*/
 	UFUNCTION(BlueprintCallable, Category = Octree)
-	void Initialize(const FBox& NewBounds);
+		void Initialize(const FBox& NewBoundsbool, bool drawDebugInfo);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
