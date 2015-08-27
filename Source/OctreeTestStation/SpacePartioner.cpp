@@ -2,7 +2,7 @@
 
 #include "OctreeTestStation.h"
 #include "SpacePartioner.h"
-
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 ASpacePartioner::ASpacePartioner(const FObjectInitializer& ObjectInitializer)
@@ -34,6 +34,17 @@ void ASpacePartioner::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 
+	//check(bInitialized);
+	//check(bDrawDebugInfo);
+
+	if (bInitialized && bDrawDebugInfo)
+	{
+		DrawDebugBox(GetWorld(), this->Bounds.GetCenter(), this->Bounds.GetExtent(), FColor().Blue, false, 0.0f);
+		DrawDebugSphere(GetWorld(), this->Bounds.GetCenter() + this->Bounds.GetExtent(), 4.0f, 12, FColor().White, false, 0.0f);
+		DrawDebugSphere(GetWorld(), this->Bounds.GetCenter() - this->Bounds.GetExtent(), 4.0f, 12, FColor().White, false, 0.0f);
+	}
+
+	
 }
 
 void ASpacePartioner::AddOctreeElement(const FOctreeElement& NewOctreeElement)

@@ -21,7 +21,7 @@ struct FOctreeElement
 	FOctreeElement()
 	{
 		MyActor = nullptr;
-		BoxSphereBounds = FBoxSphereBounds(FVector(0.0f, 0.0f, 0.0f), FVector(1.0f, 1.0f, 1.0f), 2.0f);
+		BoxSphereBounds = FBoxSphereBounds(FVector(0.0f, 0.0f, 0.0f), FVector(1.0f, 1.0f, 1.0f), 1.0f);
 	}
 };
 
@@ -75,6 +75,11 @@ public:
 	// Sets default values for this actor's properties
 	ASpacePartioner(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	/**
+	* Used in conjunction with a constructor to initialize the object.
+	* @param NewBounds	Intial size of the Octree
+	*/
+	UFUNCTION(BlueprintCallable, Category = Octree)
 	void Initialize(const FBox& NewBounds);
 
 	// Called when the game starts or when spawned
@@ -91,6 +96,10 @@ public:
 	void AddOctreeElement(const FOctreeElement& NewOctreeElement);
 
 	void ApplyWorldOffset(const FVector& InOffset);
+
+	/** Draws Debug information at runtime */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
+	bool bDrawDebugInfo = false;
 
 
 private:
