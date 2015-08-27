@@ -40,9 +40,11 @@ void ASpacePartioner::Tick( float DeltaTime )
 
 	if (bInitialized && bDrawDebugInfo)
 	{
-		DrawDebugBox(GetWorld(), this->Bounds.GetCenter(), this->Bounds.GetExtent(), FColor().Blue, false, 0.0f);
-		DrawDebugSphere(GetWorld(), this->Bounds.GetCenter() + this->Bounds.GetExtent(), 4.0f, 12, FColor().White, false, 0.0f);
-		DrawDebugSphere(GetWorld(), this->Bounds.GetCenter() - this->Bounds.GetExtent(), 4.0f, 12, FColor().White, false, 0.0f);
+		float max = this->Bounds.GetExtent().GetMax();
+		FVector extent = FVector(max, max, max);
+		DrawDebugBox(GetWorld(), this->Bounds.GetCenter(), extent, FColor().Blue, false, 0.0f);
+		DrawDebugSphere(GetWorld(), this->Bounds.GetCenter() + extent, 4.0f, 12, FColor().White, false, 0.0f);
+		DrawDebugSphere(GetWorld(), this->Bounds.GetCenter() - extent, 4.0f, 12, FColor().White, false, 0.0f);
 	}
 
 	
