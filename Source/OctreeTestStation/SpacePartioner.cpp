@@ -52,6 +52,31 @@ void ASpacePartioner::Tick( float DeltaTime )
 
 	if (bInitialized && bDrawDebugInfo)
 	{
+		// Iterating over a region in the octree and counting the elements
+		int count = 0;
+		FBoxCenterAndExtent BoundingBoxQuery = FBoxCenterAndExtent(FVector(0.0f, 0.0f, 0.0f), FVector(1000.0f, 1000.0f, 1000.0f));
+
+		for (FSimpleOctree::TConstElementBoxIterator<> OctreeIt(*OctreeData, BoundingBoxQuery);
+			OctreeIt.HasPendingElements();
+			OctreeIt.Advance())
+		{
+			count++;
+		}
+		UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *BoundingBoxQuery.Extent.ToString());
+		
+		// Reset count for next search
+		count = 0;
+
+		// Iterate over entire Octree
+		for (FSimpleOctree::TConstElementBoxIterator<> OctreeIt(*OctreeData, OctreeData->GetRootBounds());
+			OctreeIt.HasPendingElements();
+			OctreeIt.Advance())
+		{
+			count++;
+		}
+		UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *OctreeData->GetRootBounds().Extent.ToString());
+
+
 		float max = this->Bounds.GetExtent().GetMax();
 		FVector extent = FVector(max, max, max);
 		DrawDebugBox(GetWorld(), this->Bounds.GetCenter(), extent, FColor().Blue, false, 0.0f);
