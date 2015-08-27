@@ -33,6 +33,13 @@ void ASpacePartioner::Initialize(const float& inExtent, const bool& inDrawDebugI
 	FVector max = FVector(inExtent, inExtent, inExtent);
 	Bounds = FBox(min, max);
 	OctreeData = new FSimpleOctree(Bounds.GetCenter(), Bounds.GetExtent().GetMax()); // const FVector & InOrigin, float InExtent
+
+	if (Bounds.GetExtent().Equals(OctreeData->GetRootBounds().Extent))
+	{
+		UE_LOG(LogTemp, Log, TEXT("Use Get Root Bounds"));
+	}
+	UE_LOG(LogTemp, Log, TEXT("Bounds %s"), *Bounds.GetExtent().ToString());
+	UE_LOG(LogTemp, Log, TEXT("GetRootBounds %s"), *OctreeData->GetRootBounds().Extent.ToString());
 }
 
 // Called when the game starts or when spawned
@@ -62,7 +69,7 @@ void ASpacePartioner::Tick( float DeltaTime )
 		{
 			count++;
 		}
-		UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *BoundingBoxQuery.Extent.ToString());
+		// UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *BoundingBoxQuery.Extent.ToString());
 		
 		// Reset count for next search
 		count = 0;
@@ -75,7 +82,7 @@ void ASpacePartioner::Tick( float DeltaTime )
 			// OctreeIt.GetCurrentElement();
 			count++;
 		}
-		UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *OctreeData->GetRootBounds().Extent.ToString());
+		// UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *OctreeData->GetRootBounds().Extent.ToString());
 
 
 		DrawOctreeBounds();
@@ -88,6 +95,7 @@ void ASpacePartioner::AddOctreeElement(const FOctreeElement& NewOctreeElement)
 {
 	check(bInitialized);
 	OctreeData->AddElement(NewOctreeElement);
+	UE_LOG(LogTemp, Log, TEXT("Added element to Octree."));
 }
 
 void ASpacePartioner::ApplyWorldOffset(const FVector& InOffset)
