@@ -106,6 +106,8 @@ public:
 
 private:
 
+	void DrawOctreeBounds();
+
 	FSimpleOctree* OctreeData;
 	bool bInitialized;
 	FBox Bounds;

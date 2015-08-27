@@ -72,16 +72,13 @@ void ASpacePartioner::Tick( float DeltaTime )
 			OctreeIt.HasPendingElements();
 			OctreeIt.Advance())
 		{
+			// OctreeIt.GetCurrentElement();
 			count++;
 		}
 		UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *OctreeData->GetRootBounds().Extent.ToString());
 
 
-		float max = this->Bounds.GetExtent().GetMax();
-		FVector extent = FVector(max, max, max);
-		DrawDebugBox(GetWorld(), this->Bounds.GetCenter(), extent, FColor().Blue, false, 0.0f);
-		DrawDebugSphere(GetWorld(), this->Bounds.GetCenter() + extent, 4.0f, 12, FColor().White, false, 0.0f);
-		DrawDebugSphere(GetWorld(), this->Bounds.GetCenter() - extent, 4.0f, 12, FColor().White, false, 0.0f);
+		DrawOctreeBounds();
 	}
 
 	
@@ -98,4 +95,13 @@ void ASpacePartioner::ApplyWorldOffset(const FVector& InOffset)
 	Bounds.Min += InOffset;
 	Bounds.Max += InOffset;
 	OctreeData->ApplyOffset(InOffset);
+}
+
+void ASpacePartioner::DrawOctreeBounds()
+{
+	float max = this->Bounds.GetExtent().GetMax();
+	FVector extent = FVector(max, max, max);
+	DrawDebugBox(GetWorld(), this->Bounds.GetCenter(), extent, FColor().Blue, false, 0.0f);
+	DrawDebugSphere(GetWorld(), this->Bounds.GetCenter() + extent, 4.0f, 12, FColor().White, false, 0.0f);
+	DrawDebugSphere(GetWorld(), this->Bounds.GetCenter() - extent, 4.0f, 12, FColor().White, false, 0.0f);
 }
