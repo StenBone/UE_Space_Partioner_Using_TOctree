@@ -15,11 +15,11 @@ ASpacePartioner::ASpacePartioner(const FObjectInitializer& ObjectInitializer)
 	OctreeData = new FSimpleOctree(FVector(0.0f, 0.0f, 0.0f), 100.0f); // const FVector & InOrigin, float InExtent
 }
 
-void ASpacePartioner::Initialize(const FBox& NewBounds, const bool& inDrawDebugInfo)
+void ASpacePartioner::Initialize(const FBox& inNewBounds, const bool& inDrawDebugInfo)
 {
 	bInitialized = true;
 	bDrawDebugInfo = inDrawDebugInfo;
-	OctreeData = new FSimpleOctree(NewBounds.GetCenter(), NewBounds.GetExtent().GetMax()); // const FVector & InOrigin, float InExtent
+	OctreeData = new FSimpleOctree(inNewBounds.GetCenter(), inNewBounds.GetExtent().GetMax()); // const FVector & InOrigin, float InExtent
 }
 
 void ASpacePartioner::Initialize(const float& inExtent, const bool& inDrawDebugInfo)
@@ -80,11 +80,31 @@ void ASpacePartioner::Tick( float DeltaTime )
 	
 }
 
-void ASpacePartioner::AddOctreeElement(const FOctreeElement& NewOctreeElement)
+void ASpacePartioner::AddOctreeElement(const FOctreeElement& inNewOctreeElement)
 {
 	check(bInitialized);
-	OctreeData->AddElement(NewOctreeElement);
+	OctreeData->AddElement(inNewOctreeElement);
 	UE_LOG(LogTemp, Log, TEXT("Added element to Octree."));
+}
+
+TArray<FOctreeElement> ASpacePartioner::GetElementsWithinBounds(const FBoxSphereBounds& inBoundingBoxQuery)
+{
+	// Iterating over a region in the octree and storing the elements
+	int count = 0;
+	TArray<FOctreeElement> octreeElements;
+	FBoxCenterAndExtent boundingBoxQuery = FBoxCenterAndExtent(inBoundingBoxQuery);
+
+
+	for (FSimpleOctree::TConstElementBoxIterator<> OctreeIt(*OctreeData, boundingBoxQuery);
+		OctreeIt.HasPendingElements();
+		OctreeIt.Advance())
+	{
+		octreeElements.Add(OctreeIt.GetCurrentElement());
+		count++;
+	}
+	// UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *boundingBoxQuery.Extent.ToString());
+
+	return octreeElements;
 }
 
 TArray<FOctreeElement> ASpacePartioner::GetElementsWithinBounds(const FBoxCenterAndExtent& inBoundingBoxQuery)
@@ -100,7 +120,7 @@ TArray<FOctreeElement> ASpacePartioner::GetElementsWithinBounds(const FBoxCenter
 		octreeElements.Add(OctreeIt.GetCurrentElement());
 		count++;
 	}
-	// UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *inBoundingBoxQuery.Extent.ToString());
+	// UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *boundingBoxQuery.Extent.ToString());
 
 	return octreeElements;
 }

@@ -80,7 +80,7 @@ public:
 	* @param NewBounds	Intial size of the Octree
 	*/
 	UFUNCTION(BlueprintCallable, Category = Octree)
-	void Initialize(const FBox& NewBoundsbool, const bool& inDrawDebugInfo);
+	void Initialize(const FBox& inNewBounds, const bool& inDrawDebugInfo);
 	
 	void Initialize(const float& inExtent, const bool& inDrawDebugInfo);
 
@@ -95,13 +95,21 @@ public:
 	* @param NewOctreeElement	FOctreeElement to be added.
 	*/
 	UFUNCTION(BlueprintCallable, Category = Octree)
-	void AddOctreeElement(const FOctreeElement& NewOctreeElement);
+	void AddOctreeElement(const FOctreeElement& inNewOctreeElement);
+
+	/**
+	* Returns elements within the specified region.
+	* @param inBoundingBoxQuery	Box to query Octree.
+	* @return TArray of Elements
+	*/
+	UFUNCTION(BlueprintCallable, Category = Octree)
+	TArray<FOctreeElement> GetElementsWithinBounds(const FBoxSphereBounds& inBoundingBoxQuery);
+	
+	TArray<FOctreeElement> GetElementsWithinBounds(const FBoxCenterAndExtent& inBoundingBoxQuery);
 
 	/** Draws Debug information at runtime */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
 	bool bDrawDebugInfo = false;
-
-	TArray<FOctreeElement> GetElementsWithinBounds(const FBoxCenterAndExtent& inBoundingBoxQuery);
 
 private:
 
