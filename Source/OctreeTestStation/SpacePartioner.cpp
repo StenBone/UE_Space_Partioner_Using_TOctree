@@ -51,27 +51,24 @@ void ASpacePartioner::Tick( float DeltaTime )
 
 	if (bInitialized && bDrawDebugInfo)
 	{
-		// Iterating over a region in the octree and counting the elements
 		int count = 0;
-		FBoxCenterAndExtent BoundingBoxQuery = FBoxCenterAndExtent(FVector(0.0f, 0.0f, 0.0f), FVector(1000.0f, 1000.0f, 1000.0f));
 
-		for (FSimpleOctree::TConstElementBoxIterator<> OctreeIt(*OctreeData, BoundingBoxQuery);
-			OctreeIt.HasPendingElements();
-			OctreeIt.Advance())
-		{
-			count++;
-		}
-		// UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *BoundingBoxQuery.Extent.ToString());
-		
-		// Reset count for next search
-		count = 0;
+		float max;
+		FVector maxExtent;
+		FVector center;
 
 		// Iterate over entire Octree
 		for (FSimpleOctree::TConstElementBoxIterator<> OctreeIt(*OctreeData, OctreeData->GetRootBounds());
 			OctreeIt.HasPendingElements();
 			OctreeIt.Advance())
 		{
-			// OctreeIt.GetCurrentElement();
+			max = OctreeIt.GetCurrentElement().BoxSphereBounds.BoxExtent.GetMax();
+			maxExtent = FVector(max, max, max);
+			center = OctreeIt.GetCurrentElement().MyActor->GetActorLocation();
+
+			DrawDebugBox(GetWorld(), center, maxExtent, FColor().Blue, false, 0.0f);
+			DrawDebugSphere(GetWorld(), center + maxExtent, 4.0f, 12, FColor().White, false, 0.0f);
+			DrawDebugSphere(GetWorld(), center - maxExtent, 4.0f, 12, FColor().White, false, 0.0f);
 			count++;
 		}
 		// UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *OctreeData->GetRootBounds().Extent.ToString());
@@ -88,6 +85,24 @@ void ASpacePartioner::AddOctreeElement(const FOctreeElement& NewOctreeElement)
 	check(bInitialized);
 	OctreeData->AddElement(NewOctreeElement);
 	UE_LOG(LogTemp, Log, TEXT("Added element to Octree."));
+}
+
+TArray<FOctreeElement> ASpacePartioner::GetElementsWithinBounds(const FBoxCenterAndExtent& inBoundingBoxQuery)
+{
+	// Iterating over a region in the octree and storing the elements
+	int count = 0;
+	TArray<FOctreeElement> octreeElements;
+
+	for (FSimpleOctree::TConstElementBoxIterator<> OctreeIt(*OctreeData, inBoundingBoxQuery);
+		OctreeIt.HasPendingElements();
+		OctreeIt.Advance())
+	{
+		octreeElements.Add(OctreeIt.GetCurrentElement());
+		count++;
+	}
+	// UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *inBoundingBoxQuery.Extent.ToString());
+
+	return octreeElements;
 }
 
 void ASpacePartioner::DrawOctreeBounds()

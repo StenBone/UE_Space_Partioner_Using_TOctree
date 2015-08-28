@@ -101,6 +101,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
 	bool bDrawDebugInfo = false;
 
+	TArray<FOctreeElement> GetElementsWithinBounds(const FBoxCenterAndExtent& inBoundingBoxQuery);
 
 private:
 
