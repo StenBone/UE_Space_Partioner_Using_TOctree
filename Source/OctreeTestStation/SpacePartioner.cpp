@@ -51,30 +51,45 @@ void ASpacePartioner::Tick( float DeltaTime )
 
 	if (bInitialized && bDrawDebugInfo)
 	{
-		int count = 0;
+		DrawOctreeBounds();
 
 		float max;
 		FVector maxExtent;
 		FVector center;
 
-		// Iterate over entire Octree
-		for (FSimpleOctree::TConstElementBoxIterator<> OctreeIt(*OctreeData, OctreeData->GetRootBounds());
-			OctreeIt.HasPendingElements();
-			OctreeIt.Advance())
+		int nodeCount = 0;
+		int elementCount = 0;
+
+		// Go through the nodes of the octree
+		for (FSimpleOctree::TConstIterator<> NodeIt(*OctreeData); NodeIt.HasPendingNodes(); NodeIt.Advance())
 		{
-			max = OctreeIt.GetCurrentElement().BoxSphereBounds.BoxExtent.GetMax();
-			maxExtent = FVector(max, max, max);
-			center = OctreeIt.GetCurrentElement().MyActor->GetActorLocation();
+			const FSimpleOctree::FNode& CurrentNode = NodeIt.GetCurrentNode();
+			nodeCount++;
 
-			DrawDebugBox(GetWorld(), center, maxExtent, FColor().Blue, false, 0.0f);
-			DrawDebugSphere(GetWorld(), center + maxExtent, 4.0f, 12, FColor().White, false, 0.0f);
-			DrawDebugSphere(GetWorld(), center - maxExtent, 4.0f, 12, FColor().White, false, 0.0f);
-			count++;
+			FOREACH_OCTREE_CHILD_NODE(ChildRef)
+			{
+				if (CurrentNode.HasChild(ChildRef))
+				{
+					NodeIt.PushChild(ChildRef);
+				}
+			}
+
+			for (FSimpleOctree::ElementConstIt ElementIt(CurrentNode.GetElementIt()); ElementIt; ++ElementIt)
+			{
+				const FOctreeElement& Sample = *ElementIt;
+
+				// Draw debug boxes around elements
+				max = Sample.BoxSphereBounds.BoxExtent.GetMax();
+				maxExtent = FVector(max, max, max);
+				center = Sample.MyActor->GetActorLocation();
+
+				DrawDebugBox(GetWorld(), center, maxExtent, FColor().Blue, false, 0.0f);
+				DrawDebugSphere(GetWorld(), center + maxExtent, 4.0f, 12, FColor().White, false, 0.0f);
+				DrawDebugSphere(GetWorld(), center - maxExtent, 4.0f, 12, FColor().White, false, 0.0f);
+				elementCount++;
+			}
 		}
-		// UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *OctreeData->GetRootBounds().Extent.ToString());
-
-
-		DrawOctreeBounds();
+		UE_LOG(LogTemp, Log, TEXT("Node Count: %d, Element Count: %d"), nodeCount, elementCount);
 	}
 
 	
