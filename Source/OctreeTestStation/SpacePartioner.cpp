@@ -56,6 +56,7 @@ void ASpacePartioner::Tick( float DeltaTime )
 		float max;
 		FVector maxExtent;
 		FVector center;
+		FVector tempForCoercion;
 
 		int nodeCount = 0;
 		int elementCount = 0;
@@ -64,6 +65,9 @@ void ASpacePartioner::Tick( float DeltaTime )
 		for (FSimpleOctree::TConstIterator<> NodeIt(*OctreeData); NodeIt.HasPendingNodes(); NodeIt.Advance())
 		{
 			const FSimpleOctree::FNode& CurrentNode = NodeIt.GetCurrentNode();
+			const FOctreeNodeContext& CurrentContext = NodeIt.GetCurrentContext();
+			const FBoxCenterAndExtent& CurrentBounds = CurrentContext.Bounds;
+
 			nodeCount++;
 
 			FOREACH_OCTREE_CHILD_NODE(ChildRef)
@@ -73,6 +77,18 @@ void ASpacePartioner::Tick( float DeltaTime )
 					NodeIt.PushChild(ChildRef);
 				}
 			}
+
+			// Draw Node Bounds
+			tempForCoercion = CurrentBounds.Extent;
+			max = tempForCoercion.GetMax();
+			maxExtent = FVector(max, max, max);
+			center = CurrentBounds.Center;
+
+			// UE_LOG(LogTemp, Log, TEXT("Extent of nodes: %s"), *tempForCoercion.ToString());
+
+			DrawDebugBox(GetWorld(), center, maxExtent, FColor().Blue, false, 0.0f);
+			DrawDebugSphere(GetWorld(), center + maxExtent, 4.0f, 12, FColor().Green, false, 0.0f);
+			DrawDebugSphere(GetWorld(), center - maxExtent, 4.0f, 12, FColor().Red, false, 0.0f);
 
 			for (FSimpleOctree::ElementConstIt ElementIt(CurrentNode.GetElementIt()); ElementIt; ++ElementIt)
 			{
