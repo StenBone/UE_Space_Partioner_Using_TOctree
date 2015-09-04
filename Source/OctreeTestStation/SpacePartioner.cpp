@@ -54,6 +54,8 @@ void ASpacePartioner::Tick( float DeltaTime )
 		DrawOctreeBounds();
 
 		float max;
+		float offsetMax;
+		float offset;
 		FVector maxExtent;
 		FVector center;
 		FVector tempForCoercion;
@@ -81,8 +83,53 @@ void ASpacePartioner::Tick( float DeltaTime )
 			// Draw Node Bounds
 			tempForCoercion = CurrentBounds.Extent;
 			max = tempForCoercion.GetMax();
-			maxExtent = FVector(max, max, max);
 			center = CurrentBounds.Center;
+
+			// UE_LOG(LogTemp, Log, TEXT("center before: %s"), *center.ToString());
+			
+			// To understand the math here check out the constructors in FOctreeNodeContext
+			// Offset nodes that are not the root bounds
+			if (!OctreeData->GetRootBounds().Extent.Equals(CurrentBounds.Extent))
+			{
+				// Calculate offset
+				offsetMax = max / (1.0f + (1.0f / FOctreeNodeContext::LoosenessDenominator));
+				offset = max - offsetMax;
+				max = offsetMax;
+
+				// Calculate Center Offset
+				if (center.X > 0)
+				{
+					center.X = center.X + offset;
+				}
+				else
+				{
+					center.X = center.X - offset;
+				}
+
+				if (center.Y > 0)
+				{
+					center.Y = center.Y + offset;
+				}
+				else
+				{
+					center.Y = center.Y - offset;
+				}
+
+				if (center.Z > 0)
+				{
+					center.Z = center.Z + offset;
+				}
+				else
+				{
+					center.Z = center.Z - offset;
+				}
+			}
+
+			// UE_LOG(LogTemp, Log, TEXT("max: %f"), max);
+			// UE_LOG(LogTemp, Log, TEXT("center of nodes: %s"), *center.ToString());
+
+			maxExtent = FVector(max, max, max);
+			
 
 			// UE_LOG(LogTemp, Log, TEXT("Extent of nodes: %s"), *tempForCoercion.ToString());
 

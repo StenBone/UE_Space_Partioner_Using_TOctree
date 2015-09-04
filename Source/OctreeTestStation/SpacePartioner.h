@@ -27,7 +27,7 @@ struct FOctreeElement
 
 struct FOctreeSematics
 {
-	enum { MaxElementsPerLeaf = 16 };
+	enum { MaxElementsPerLeaf = 2 }; // 16
 	enum { MinInclusiveElementsPerNode = 7 };
 	enum { MaxNodeDepth = 12 };
 
