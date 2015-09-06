@@ -53,12 +53,14 @@ void ASpacePartioner::Tick( float DeltaTime )
 	{
 		DrawOctreeBounds();
 
+		int level = 0;
 		float max;
 		float offsetMax;
 		float offset;
 		FVector maxExtent;
 		FVector center;
 		FVector tempForCoercion;
+		FBoxCenterAndExtent OldBounds = FBoxCenterAndExtent();
 
 		int nodeCount = 0;
 		int elementCount = 0;
@@ -80,6 +82,15 @@ void ASpacePartioner::Tick( float DeltaTime )
 				}
 			}
 
+			// It the extents have changed then we have moved a level.
+			if (!OldBounds.Extent.Equals(CurrentBounds.Extent))
+			{
+				level++;
+			}
+			OldBounds = CurrentBounds;
+
+			// UE_LOG(LogTemp, Log, TEXT("Level: %d"), level);
+
 			// Draw Node Bounds
 			tempForCoercion = CurrentBounds.Extent;
 			max = tempForCoercion.GetMax();
@@ -91,41 +102,44 @@ void ASpacePartioner::Tick( float DeltaTime )
 			// Offset nodes that are not the root bounds
 			if (!OctreeData->GetRootBounds().Extent.Equals(CurrentBounds.Extent))
 			{
-				// Calculate offset
-				offsetMax = max / (1.0f + (1.0f / FOctreeNodeContext::LoosenessDenominator));
-				offset = max - offsetMax;
-				max = offsetMax;
+				for (int i = 1; i < level; i++)
+				{
+					// Calculate offset
+					offsetMax = max / (1.0f + (1.0f / FOctreeNodeContext::LoosenessDenominator));
+					offset = max - offsetMax;
+					max = offsetMax;
+				
+					// Calculate Center Offset
+					if (center.X > 0)
+					{
+						center.X = center.X + offset;
+					}
+					else
+					{
+						center.X = center.X - offset;
+					}
 
-				// Calculate Center Offset
-				if (center.X > 0)
-				{
-					center.X = center.X + offset;
-				}
-				else
-				{
-					center.X = center.X - offset;
-				}
+					if (center.Y > 0)
+					{
+						center.Y = center.Y + offset;
+					}
+					else
+					{
+						center.Y = center.Y - offset;
+					}
 
-				if (center.Y > 0)
-				{
-					center.Y = center.Y + offset;
-				}
-				else
-				{
-					center.Y = center.Y - offset;
-				}
-
-				if (center.Z > 0)
-				{
-					center.Z = center.Z + offset;
-				}
-				else
-				{
-					center.Z = center.Z - offset;
+					if (center.Z > 0)
+					{
+						center.Z = center.Z + offset;
+					}
+					else
+					{
+						center.Z = center.Z - offset;
+					}
 				}
 			}
 
-			// UE_LOG(LogTemp, Log, TEXT("max: %f"), max);
+			UE_LOG(LogTemp, Log, TEXT("max: %f"), max);
 			// UE_LOG(LogTemp, Log, TEXT("center of nodes: %s"), *center.ToString());
 
 			maxExtent = FVector(max, max, max);
