@@ -51,7 +51,6 @@ void ASpacePartioner::Tick( float DeltaTime )
 
 	if (bInitialized && bDrawDebugInfo)
 	{
-		DrawOctreeBounds();
 
 		int level = 0;
 		float max;
@@ -82,7 +81,7 @@ void ASpacePartioner::Tick( float DeltaTime )
 				}
 			}
 
-			// It the extents have changed then we have moved a level.
+			// If the extents have changed then we have moved a level.
 			if (!OldBounds.Extent.Equals(CurrentBounds.Extent))
 			{
 				level++;
@@ -166,7 +165,7 @@ void ASpacePartioner::Tick( float DeltaTime )
 				elementCount++;
 			}
 		}
-		UE_LOG(LogTemp, Log, TEXT("Node Count: %d, Element Count: %d"), nodeCount, elementCount);
+		// UE_LOG(LogTemp, Log, TEXT("Node Count: %d, Element Count: %d"), nodeCount, elementCount);
 	}
 
 	
@@ -181,22 +180,8 @@ void ASpacePartioner::AddOctreeElement(const FOctreeElement& inNewOctreeElement)
 
 TArray<FOctreeElement> ASpacePartioner::GetElementsWithinBounds(const FBoxSphereBounds& inBoundingBoxQuery)
 {
-	// Iterating over a region in the octree and storing the elements
-	int count = 0;
-	TArray<FOctreeElement> octreeElements;
 	FBoxCenterAndExtent boundingBoxQuery = FBoxCenterAndExtent(inBoundingBoxQuery);
-
-
-	for (FSimpleOctree::TConstElementBoxIterator<> OctreeIt(*OctreeData, boundingBoxQuery);
-		OctreeIt.HasPendingElements();
-		OctreeIt.Advance())
-	{
-		octreeElements.Add(OctreeIt.GetCurrentElement());
-		count++;
-	}
-	// UE_LOG(LogTemp, Log, TEXT("%d elements in %s"), count, *boundingBoxQuery.Extent.ToString());
-
-	return octreeElements;
+	return GetElementsWithinBounds(boundingBoxQuery);
 }
 
 TArray<FOctreeElement> ASpacePartioner::GetElementsWithinBounds(const FBoxCenterAndExtent& inBoundingBoxQuery)

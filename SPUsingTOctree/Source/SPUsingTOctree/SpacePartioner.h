@@ -78,10 +78,16 @@ public:
 	/**
 	* Used in conjunction with a constructor to initialize the object.
 	* @param NewBounds	Intial size of the Octree
+	* @param inDrawDebugInfo	Whether or not to display debug boundaries
 	*/
 	UFUNCTION(BlueprintCallable, Category = Octree)
 	void Initialize(const FBox& inNewBounds, const bool& inDrawDebugInfo);
 	
+	/**
+	* Used in conjunction with a constructor to initialize the object.
+	* @param inExtent	Intial size of the Octree
+	* @param inDrawDebugInfo	Whether or not to display debug boundaries
+	*/
 	void Initialize(const float& inExtent, const bool& inDrawDebugInfo);
 
 	// Called when the game starts or when spawned
@@ -105,6 +111,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Octree)
 	TArray<FOctreeElement> GetElementsWithinBounds(const FBoxSphereBounds& inBoundingBoxQuery);
 	
+	/**
+	* Returns elements within the specified region.
+	* @param inBoundingBoxQuery	Box to query Octree.
+	* @return TArray of Elements
+	*/
 	TArray<FOctreeElement> GetElementsWithinBounds(const FBoxCenterAndExtent& inBoundingBoxQuery);
 
 	/** Draws Debug information at runtime */
