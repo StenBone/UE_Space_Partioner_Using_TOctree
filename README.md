@@ -9,7 +9,7 @@ This project was created to give users an easy to access reference on how to use
 The project is availible in its entirety. All a user has to do is clone the repository to his or her computer. When opening the Visual Studio solution, make sure that "Development Editor" and "Win64" are set in the configuration manager drop downs at the top of the editor window.
 
 ## Contributors 
-If you want to contribute, please submit a pull request with your changes.
+If you want to contribute, please submit a pull request with your changes. More information can be found [here](https://help.github.com/articles/using-pull-requests/).
 
 ## Liscene
 This project uses the MIT license. This essentially means that if you use code from the project then you need to credit it in your product some way. More information can be found [here](http://choosealicense.com/).
